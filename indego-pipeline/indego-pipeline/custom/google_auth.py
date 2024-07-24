@@ -64,9 +64,9 @@ def transform_custom(*args, **kwargs):
 
 @test
 def test_output(output, *args) -> None:
-    print(type(output))
-    # assert 'indego_815299289556' in output['type'].value_counts(), 'missing storage bucket'
-    # assert 'indego_tripdata' in output['type'].value_counts(), 'missing bigquery dataset '
-    # assert 'indego-cluster' in output['type'].value_counts(), 'missing dataproc cluster'
-    # assert output is not None, 'The output is undefined'
+    assert 'cloud storage bucket' in output['type'].value_counts(), 'missing storage bucket'
+    assert 'bigquery dataset' in output['type'].value_counts(), 'missing bigquery dataset '
+    assert 'dataproc cluster' in output['type'].value_counts(), 'missing dataproc cluster'
+    assert output is not None, 'The output is undefined'
+
 test_output(transform_custom())
