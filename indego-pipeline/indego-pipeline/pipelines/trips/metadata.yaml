@@ -31,13 +31,30 @@ blocks:
   language: python
   name: load_rides_zip_csv
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_loader
   upstream_blocks:
   - identify_url
   uuid: load_rides_zip_csv
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - pyarrow_to_gcs_parquet
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: rides_data_cleanup
+  retry_config: null
+  status: executed
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - load_rides_zip_csv
+  uuid: rides_data_cleanup
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks: []
@@ -45,14 +62,14 @@ blocks:
   executor_type: local_python
   has_callback: false
   language: python
-  name: rides_data_cleanup
+  name: pyarrow_to_gcs_parquet
   retry_config: null
-  status: updated
+  status: not_executed
   timeout: null
-  type: transformer
+  type: data_exporter
   upstream_blocks:
-  - load_rides_zip_csv
-  uuid: rides_data_cleanup
+  - rides_data_cleanup
+  uuid: pyarrow_to_gcs_parquet
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}

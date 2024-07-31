@@ -5,9 +5,17 @@ if 'transformer' not in globals():
 if 'test' not in globals():
     from mage_ai.data_preparation.decorators import test
 
+year = 2024
+quarter = 2
 
 @transformer
 def transform(data, *args, **kwargs):
+
+    # start times should fall within the year and quarter (end times are coerced to 24 hours max duration)
+    data = data.loc[
+        (data.start_time.dt.year == year) &
+        (data.start_time.dt.quarter == quarter)
+        ]
 
     # remove null and invalid bike IDs (e.g. 'WAND_RUSSELL')
     data['bike_id'] = pd.to_numeric(data['bike_id'], errors='coerce', downcast='integer')
@@ -35,7 +43,7 @@ def transform(data, *args, **kwargs):
         'trip_route_category'] = 'Round Trip'
 
     # remove duplicate trip_ids
-    data = data.drop_duplicates(subset='trip_id')
+    data = data.drop_duplicates(subset='trip_id', ignore_index=True)
 
     # remove rides with invalid latitude or longitudes (but keep nulls)
     data = data.loc[
@@ -45,16 +53,47 @@ def transform(data, *args, **kwargs):
         (((data['end_lon'] >= -180) & (data['end_lon'] <= 180 | (data['end_lon'].isna()))))
         ]
 
-    # missing values are acceptable for the following columns:
-    # plan_duration: should be a positive integer or 0 for single-day use
-    # passholder_type: '---'
-    # bike_type: '---'
+    # we will accept missing values for the following columns:
+        # plan_duration: should be a positive integer or 0 for single-day use
+        # passholder_type: '---'
+        # bike_type: '---'
 
     return data
 
 @test
 def test_output(output, *args) -> None:
 
-    output.trip_id.nunique() == output.shape[0], 'duplicate trip IDs in dataset'
+    output_schema = {
+        'trip_id': 'Int64',
+        'duration': 'int64',
+        'start_time': 'datetime64[ns]',
+        'end_time': 'datetime64[ns]',
+        'start_station': 'Int64',
+        'start_lat': 'float64',
+        'start_lon': 'float64',
+        'end_station': 'Int64',
+        'end_lat': 'float64',
+        'end_lon': 'float64',
+        'bike_id': 'float64',
+        'plan_duration': 'Int64',
+        'trip_route_category': 'object',
+        'passholder_type': 'object',
+        'bike_type': 'object'}
 
+    # check that all column dtypes match the required schema
+    dtype_mismatch = [
+        col for col in output.columns if
+        col in output_schema.keys() and output[col].dtype != output_schema[col]
+        ]
+    dtypes_correct = len(dtype_mismatch) == 0
+
+    # check that all columns are present
+    missing_columns = [
+        col for col in output_schema.keys()
+        if col not in output.columns]
+    columns_complete = len(missing_columns) == 0
+
+    assert dtypes_correct, f'columns with incorrect dtypes: {dtype_mismatch}'
+    assert columns_complete, f'missing columns: {missing_columns}'
     assert output is not None, 'The output is undefined'
+    assert output.trip_id.nunique() == output.shape[0], 'dataset contains duplicate trip IDs'
