@@ -5,34 +5,36 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 import os
-
-if 'data_exporter' not in globals():
-    from mage_ai.data_preparation.decorators import data_exporter
-
-# google client libraries
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 import google.auth
 from google.cloud import storage
 from google.cloud import bigquery
-import pandas as pd
+if 'data_exporter' not in globals():
+    from mage_ai.data_preparation.decorators import data_exporter
+
 
 # default credentials will resolve to the attached service account
 credentials, project = google.auth.default()
-print('authenticated google using default credentials')
-
-year = 2024
-quarter = 2
-
+print('authenticated google service account via default credentials')
 
 @data_exporter
-def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
-    
+def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:    
+
+    # set the target year/quarter to previous quarter
+    now = kwargs.get('execution_date')
+    target = now - relativedelta(months=3)
+    year = target.year
+    quarter = pd.Timestamp(target).quarter
+
     # assign Y/M/D columns for cleaner partitioning
     df = df.assign(
         Y = df['start_time'].dt.year,
+        Q = df['start_time'].dt.quarter,
         M = df['start_time'].dt.month,
         D = df['start_time'].dt.day)
 
-    df = df.drop_duplicates(subset=['Y','M','D'])
+    df = df.drop_duplicates(subset=['Y','Q','M','D'])
 
     # specify schema for pyarrow table
     output_schema = pa.schema([
@@ -52,6 +54,7 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
         ('passholder_type', pa.string()),
         ('bike_type', pa.string()),
         ('Y', pa.int64()),
+        ('Q', pa.int64()),
         ('M', pa.int64()),        
         ('D', pa.int64())
         ])
@@ -64,9 +67,8 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
     except exception as E:
         print(f'could not create table: {E}')
 
-
     # generate GCS object
-    gcs = pa.fs.GcsFileSystem()
+    rides_filesystem = pa.fs.GcsFileSystem()
 
     # set parameters for path
     bucket_name = 'indego_815299289556'
@@ -79,7 +81,7 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
     pq.write_to_dataset(
         table,
         root_path=root_path,
-        partition_cols=['Y', 'M', 'D'],
+        partition_cols=['Y', 'Q', 'M', 'D'],
         basename_template = 'trips{i}.parquet',
-        filesystem = gcs
+        filesystem = rides_filesystem
     )

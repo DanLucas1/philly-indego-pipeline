@@ -57,8 +57,7 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
-  downstream_blocks:
-  - parquet_to_bigquery
+  downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -71,22 +70,6 @@ blocks:
   upstream_blocks:
   - rides_data_cleanup
   uuid: pyarrow_to_gcs_parquet
-- all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks: []
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: parquet_to_bigquery
-  retry_config: null
-  status: updated
-  timeout: null
-  type: data_exporter
-  upstream_blocks:
-  - pyarrow_to_gcs_parquet
-  uuid: parquet_to_bigquery
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -98,7 +81,7 @@ executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: trips
+name: trips_to_gcs
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -108,6 +91,6 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: trips
+uuid: trips_to_gcs
 variables_dir: /home/src/mage_data/indego-pipeline
 widgets: []

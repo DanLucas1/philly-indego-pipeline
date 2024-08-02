@@ -4,6 +4,8 @@ import requests
 import zipfile
 from pyarrow import csv
 import pandas as pd
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 if 'custom' not in globals():
     from mage_ai.data_preparation.decorators import custom
@@ -12,11 +14,15 @@ if 'data_loader' not in globals():
 if 'test' not in globals():
     from mage_ai.data_preparation.decorators import test
 
-year = 2024
-quarter = 2
 
 @data_loader
 def download_zip(zipfile_url, *args, **kwargs):
+
+    # set the target year/quarter to previous quarter
+    now = kwargs.get('execution_date')
+    target = now - relativedelta(months=3)
+    year = target.year
+    quarter = pd.Timestamp(target).quarter
 
     headers = {'user-agent': 'student-project', 'Accept-Encoding': 'identity'}
     response = requests.get(zipfile_url, headers=headers)

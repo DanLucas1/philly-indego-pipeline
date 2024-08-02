@@ -4,12 +4,17 @@ if 'transformer' not in globals():
     from mage_ai.data_preparation.decorators import transformer
 if 'test' not in globals():
     from mage_ai.data_preparation.decorators import test
-
-year = 2024
-quarter = 2
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 
 @transformer
 def transform(data, *args, **kwargs):
+
+    # set the target year/quarter to previous quarter
+    now = kwargs.get('execution_date')
+    target = now - relativedelta(months=3)
+    year = target.year
+    quarter = pd.Timestamp(target).quarter
 
     # start times should fall within the year and quarter (end times are coerced to 24 hours max duration)
     data = data.loc[
