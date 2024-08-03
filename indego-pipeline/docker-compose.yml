@@ -9,6 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      PROJECT_NAME: ${PROJECT_NAME}
       USER_CODE_PATH: /home/src/${PROJECT_NAME}
       ENV: ${ENV}
     ports:

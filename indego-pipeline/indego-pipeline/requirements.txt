@@ -1,5 +1,5 @@
-
 google-cloud-storage
 google-cloud-bigquery
 google-cloud-dataproc
-pandas_gbq
+pandas-gbq
+

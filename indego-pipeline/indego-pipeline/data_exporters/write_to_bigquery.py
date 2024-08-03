@@ -1,5 +1,6 @@
 import pandas as pd
 from pandas import DataFrame
+import google.auth
 import os
 from os import path
 import pandas_gbq
@@ -30,20 +31,22 @@ bq_schema = [
     bigquery.SchemaField('passholder_type', 'STRING'),
     bigquery.SchemaField('bike_type', 'STRING')]
 
-    
+
 @data_exporter
 def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
 
     ## ---- SETUP ----
 
-    # load parameters from kwargs
-    # project_id = kwargs.get('project_id')
-    # dataset = kwargs.get('bq_dataset_name')
-
     # specify cloud project resources
     project_id = 'indego-pipeline'
     dataset = 'indego_tripdata'
     table_name = 'fact_indego_rides'
+    table_id = f'{dataset}.{table_name}'
+
+    # dataset partitioning and clustering
+    partition_field = 'start_time'
+    cluster_fields = ['start_station', 'end_station']
+
 
     ## ---- WRITE TO BIGQUERY ----
 
@@ -55,12 +58,13 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
         f'{project_id}.{dataset}.{table_name}',
          schema=bq_schema)
 
-    # specify partitioning and clustering
-    table.time_partitioning = bigquery.TimePartitioning(  # define partitioning field
+    # specify partitioning
+    table.time_partitioning = bigquery.TimePartitioning(
         type_=bigquery.TimePartitioningType.DAY,
-        field=start_time)
+        field=partition_field)
 
-    table.clustering_fields = ['bike_id']  # define clustering field
+    # define clustering field
+    table.clustering_fields = cluster_fields
 
     # create the table
     client.create_table(table, exists_ok=True)
@@ -70,7 +74,6 @@ def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
             df,
             table_id,
             project_id=project_id,
-            # chunksize=10000,
             if_exists='append')
         print(f'wrote {df.shape[0]} records to dataset {project_id}.{table_id}')
     except Exception as E:

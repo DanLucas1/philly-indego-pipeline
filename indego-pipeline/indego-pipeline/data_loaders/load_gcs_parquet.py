@@ -64,7 +64,7 @@ def load_from_gcs(*args, **kwargs):
         'end_station': 'Int64',
         'end_lat': 'float64',
         'end_lon': 'float64',
-        'bike_id': 'object',
+        'bike_id': 'int64',
         'plan_duration': 'Int64',
         'trip_route_category': 'object',
         'passholder_type': 'object',
