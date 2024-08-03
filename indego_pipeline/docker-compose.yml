@@ -1,0 +1,14 @@
+services:
+  magic:
+    image: mageai/mageai:latest
+    env_file:
+      - .env
+    command: mage start indego_pipeline
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 6789:6789
+    volumes:
+      - .:/home/src/
+    restart: on-failure:5
