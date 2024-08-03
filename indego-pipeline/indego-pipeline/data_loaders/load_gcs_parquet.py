@@ -37,11 +37,11 @@ def load_from_gcs(*args, **kwargs):
     # generate GCS object
     gcs = pa.fs.GcsFileSystem()
 
-    # # specify partitioning based on taxi type
+    # specify partitioning to match file structure
     partitioning = ds.partitioning(
         schema=pa.schema([
             ('Y', pa.int32()),
-            ('Q', pa.string()),
+            ('Q', pa.int32()),
             ('M', pa.int32()),
             ('D', pa.int32())
             ]),

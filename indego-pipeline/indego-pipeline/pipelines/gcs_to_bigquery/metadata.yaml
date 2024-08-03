@@ -25,7 +25,7 @@ blocks:
   language: python
   name: write_to_bigquery
   retry_config: null
-  status: updated
+  status: failed
   timeout: null
   type: data_exporter
   upstream_blocks:

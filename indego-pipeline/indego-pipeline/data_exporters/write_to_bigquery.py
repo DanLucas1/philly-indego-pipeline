@@ -4,6 +4,7 @@ import os
 from os import path
 import pandas_gbq
 from google.cloud import bigquery
+
 if 'data_exporter' not in globals():
     from mage_ai.data_preparation.decorators import data_exporter
 
@@ -15,54 +16,51 @@ print('authenticated google service account via default credentials')
 bq_schema = [
     bigquery.SchemaField('trip_id', 'INTEGER'),
     bigquery.SchemaField('duration', 'INTEGER'),
-    bigquery.SchemaField('start_time', 'TIMESTAMP')
-    bigquery.SchemaField('end_time', 'TIMESTAMP')
-    bigquery.SchemaField('start_station', 'INTEGER')
-    bigquery.SchemaField('start_lat', 'FLOAT')
-    bigquery.SchemaField('start_lon', 'FLOAT')
-    bigquery.SchemaField('end_station', 'INTEGER')
-    bigquery.SchemaField('end_lat', 'FLOAT')
-    bigquery.SchemaField('end_lon', 'FLOAT')
-    bigquery.SchemaField('bike_id', 'FLOAT')
-    bigquery.SchemaField('plan_duration', 'INTEGER')
-    bigquery.SchemaField('trip_route_category', 'STRING')
-    bigquery.SchemaField('passholder_type', 'STRING')
+    bigquery.SchemaField('start_time', 'TIMESTAMP'),
+    bigquery.SchemaField('end_time', 'TIMESTAMP'),
+    bigquery.SchemaField('start_station', 'INTEGER'),
+    bigquery.SchemaField('start_lat', 'FLOAT'),
+    bigquery.SchemaField('start_lon', 'FLOAT'),
+    bigquery.SchemaField('end_station', 'INTEGER'),
+    bigquery.SchemaField('end_lat', 'FLOAT'),
+    bigquery.SchemaField('end_lon', 'FLOAT'),
+    bigquery.SchemaField('bike_id', 'FLOAT'),
+    bigquery.SchemaField('plan_duration', 'INTEGER'),
+    bigquery.SchemaField('trip_route_category', 'STRING'),
+    bigquery.SchemaField('passholder_type', 'STRING'),
     bigquery.SchemaField('bike_type', 'STRING')]
 
     
-
 @data_exporter
 def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
 
     ## ---- SETUP ----
 
     # load parameters from kwargs
-    project_id = kwargs.get('project_id')
-    dataset = kwargs.get('bq_dataset_name')
-    taxi_type = kwargs.get('taxi_type')
+    # project_id = kwargs.get('project_id')
+    # dataset = kwargs.get('bq_dataset_name')
 
-    # identify partitioning column based on taxi_type
-    partition_options = {
-        'yellow': 'tpep_pickup_datetime',
-        'green': 'lpep_pickup_datetime',
-        'fhv': 'pickup_datetime'}
-    trip_datetime = partition_options.get(taxi_type)
-
-    # specify bigquery table ID
-    table_id = f'{dataset}.{taxi_type}_trips'
+    # specify cloud project resources
+    project_id = 'indego-pipeline'
+    dataset = 'indego_tripdata'
+    table_name = 'fact_indego_rides'
 
     ## ---- WRITE TO BIGQUERY ----
 
     # initialize bigquery client
     client = bigquery.Client()
 
-    # define partitioning and clustering
-    table = bigquery.Table(f'{project_id}.{table_id}', schema=schemas.get(taxi_type, None))
+    # generate table object
+    table = bigquery.Table(
+        f'{project_id}.{dataset}.{table_name}',
+         schema=bq_schema)
+
+    # specify partitioning and clustering
     table.time_partitioning = bigquery.TimePartitioning(  # define partitioning field
         type_=bigquery.TimePartitioningType.DAY,
-        field=trip_datetime
-    )
-    table.clustering_fields = ['pu_location_id']  # define clustering field
+        field=start_time)
+
+    table.clustering_fields = ['bike_id']  # define clustering field
 
     # create the table
     client.create_table(table, exists_ok=True)
