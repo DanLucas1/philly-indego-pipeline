@@ -3,6 +3,7 @@ import pandas as pd
 import google.auth
 import pandas_gbq
 from google.cloud import bigquery
+from indego_pipeline.utils.schemas import bq_schema
 
 if 'data_exporter' not in globals():
     from mage_ai.data_preparation.decorators import data_exporter
@@ -10,25 +11,6 @@ if 'data_exporter' not in globals():
 # default credentials will resolve to the attached service account
 credentials, project = google.auth.default()
 print('authenticated google service account via default credentials')
-
-
-bq_schema = [
-    bigquery.SchemaField('trip_id', 'INTEGER'),
-    bigquery.SchemaField('duration', 'INTEGER'),
-    bigquery.SchemaField('start_time', 'TIMESTAMP'),
-    bigquery.SchemaField('end_time', 'TIMESTAMP'),
-    bigquery.SchemaField('start_station', 'INTEGER'),
-    bigquery.SchemaField('start_lat', 'FLOAT'),
-    bigquery.SchemaField('start_lon', 'FLOAT'),
-    bigquery.SchemaField('end_station', 'INTEGER'),
-    bigquery.SchemaField('end_lat', 'FLOAT'),
-    bigquery.SchemaField('end_lon', 'FLOAT'),
-    bigquery.SchemaField('bike_id', 'FLOAT'),
-    bigquery.SchemaField('plan_duration', 'INTEGER'),
-    bigquery.SchemaField('trip_route_category', 'STRING'),
-    bigquery.SchemaField('passholder_type', 'STRING'),
-    bigquery.SchemaField('bike_type', 'STRING')]
-
 
 @data_exporter
 def export_data_to_big_query(df: pd.DataFrame, **kwargs) -> None:

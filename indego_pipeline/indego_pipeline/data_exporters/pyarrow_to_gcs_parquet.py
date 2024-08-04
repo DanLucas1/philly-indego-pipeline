@@ -2,6 +2,7 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 from indego_pipeline.utils.set_date import previous_quarter
+from indego_pipeline.utils.schemas import arrow_schema
 import google.auth
 from google.cloud import storage
 if 'data_exporter' not in globals():
@@ -24,33 +25,10 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
         M = df['start_time'].dt.month,
         D = df['start_time'].dt.day)
 
-    # df = df.drop_duplicates(subset=['Y','Q','M','D'])
-
-    # specify schema for pyarrow table
-    output_schema = pa.schema([
-        ('trip_id', pa.int64()),
-        ('duration', pa.int64()),
-        ('start_time', pa.timestamp('ns')),
-        ('end_time', pa.timestamp('ns')),
-        ('start_station', pa.int64()),
-        ('start_lat', pa.float64()),
-        ('start_lon', pa.float64()),
-        ('end_station', pa.int64()),
-        ('end_lat', pa.float64()),
-        ('end_lon', pa.float64()),
-        ('bike_id', pa.float64()),
-        ('plan_duration', pa.int64()),
-        ('trip_route_category', pa.string()),
-        ('passholder_type', pa.string()),
-        ('bike_type', pa.string()),
-        ('Y', pa.int64()),
-        ('Q', pa.int64()),
-        ('M', pa.int64()),        
-        ('D', pa.int64())
-        ])
+    df = df.drop_duplicates(subset=['Y','Q','M','D'])
 
     try:
-        table = pa.Table.from_pandas(df, schema=output_schema, preserve_index=False)
+        table = pa.Table.from_pandas(df, schema=arrow_schema, preserve_index=False)
         r = table.num_rows
         c = table.num_columns
         print(f'created pyarrow table for Q{quarter}-{year}: {r} rows, {c} columns')

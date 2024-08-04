@@ -25,7 +25,7 @@ blocks:
   language: python
   name: write_to_bigquery
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
@@ -53,5 +53,10 @@ spark_config: {}
 tags: []
 type: python
 uuid: gcs_to_bigquery
+variables:
+  bq_dataset: indego_tripdata
+  bq_table: fact_indego_rides
+  bucket_name: indego_815299289556
+  project_id: indego-pipeline
 variables_dir: /home/src/mage_data/indego_pipeline
 widgets: []

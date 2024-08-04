@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from indego_pipeline.utils.set_date import previous_quarter
+from indego_pipeline.utils.schemas import dtypes_write
 if 'transformer' not in globals():
     from mage_ai.data_preparation.decorators import transformer
 if 'test' not in globals():
@@ -54,38 +55,23 @@ def transform(data, *args, **kwargs):
         (((data['end_lon'] >= -180) & (data['end_lon'] <= 180 | (data['end_lon'].isna()))))
         ]
 
+    data = data.astype(dtypes_write)
+
     return data
 
 @test
 def test_output(output, *args) -> None:
 
-    output_schema = {
-        'trip_id': 'Int64',
-        'duration': 'int64',
-        'start_time': 'datetime64[ns]',
-        'end_time': 'datetime64[ns]',
-        'start_station': 'Int64',
-        'start_lat': 'float64',
-        'start_lon': 'float64',
-        'end_station': 'Int64',
-        'end_lat': 'float64',
-        'end_lon': 'float64',
-        'bike_id': 'float64',
-        'plan_duration': 'Int64',
-        'trip_route_category': 'object',
-        'passholder_type': 'object',
-        'bike_type': 'object'}
-
     # check that all column dtypes match the required schema
     dtype_mismatch = [
         col for col in output.columns if
-        col in output_schema.keys() and output[col].dtype != output_schema[col]
+        col in dtypes_write.keys() and output[col].dtype != dtypes_write[col]
         ]
     dtypes_correct = len(dtype_mismatch) == 0
 
     # check that all columns are present
     missing_columns = [
-        col for col in output_schema.keys()
+        col for col in dtypes_write.keys()
         if col not in output.columns]
     columns_complete = len(missing_columns) == 0
 

@@ -44,8 +44,23 @@ arrow_schema = pa.schema([
     ('D', pa.int64())
 ])
 
-# Pandas dtypes
-pandas_dtypes = {
+# Pandas read csv
+dtypes_read = {
+    'trip_id': 'Int64',
+    'duration': 'Int64',
+    'start_station': 'Int64',
+    'start_lat': 'float64',
+    'start_lon': 'float64',
+    'end_station': 'Int64',
+    'end_lat': 'float64',
+    'end_lon': 'float64',
+    'bike_id': 'object',
+    'plan_duration': 'Int64',
+    'trip_route_category': 'object',
+    'passholder_type': 'object',
+    'bike_type': 'object'}
+
+dtypes_write = {
     'trip_id': 'Int64',
     'duration': 'Int64',
     'start_station': 'Int64',

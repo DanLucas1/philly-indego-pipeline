@@ -5,6 +5,7 @@ import pyarrow.parquet as pq
 import pyarrow.dataset as ds
 import os
 from indego_pipeline.utils.set_date import previous_quarter
+from indego_pipeline.utils.schemas import pandas_dtypes
 
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
@@ -47,23 +48,8 @@ def load_from_gcs(*args, **kwargs):
         format='parquet',
         partitioning=partitioning)
 
-    dtypes = {
-        'trip_id': 'Int64',
-        'duration': 'Int64',
-        'start_station': 'Int64',
-        'start_lat': 'float64',
-        'start_lon': 'float64',
-        'end_station': 'Int64',
-        'end_lat': 'float64',
-        'end_lon': 'float64',
-        'bike_id': 'int64',
-        'plan_duration': 'Int64',
-        'trip_route_category': 'object',
-        'passholder_type': 'object',
-        'bike_type': 'object'}
-
     # cast dataset to pandas df
-    df = pq_from_gcs.to_table().to_pandas().astype(dtypes)
+    df = pq_from_gcs.to_table().to_pandas().astype(pandas_dtypes)
 
     # drop the partition columns
     df = df.drop(columns=['Y', 'Q', 'M', 'D'])

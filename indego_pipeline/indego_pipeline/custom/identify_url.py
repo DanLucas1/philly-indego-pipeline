@@ -13,11 +13,11 @@ def identify_zipfile(*args, **kwargs):
 
     year, quarter = previous_quarter(kwargs['execution_date'])
 
-    indego_url = kwargs['indego_url']
+    url = kwargs['indego_url']
 
     # retrieve HTML content
     headers = {'user-agent': 'student-project'}
-    response = requests.get(main_url, headers=headers)
+    response = requests.get(url, headers=headers)
 
     if response.status_code == 200:
         html_content = response.text
