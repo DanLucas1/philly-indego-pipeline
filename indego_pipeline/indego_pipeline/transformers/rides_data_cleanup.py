@@ -1,20 +1,16 @@
 import numpy as np
 import pandas as pd
+from indego_pipeline.utils.set_date import previous_quarter
 if 'transformer' not in globals():
     from mage_ai.data_preparation.decorators import transformer
 if 'test' not in globals():
     from mage_ai.data_preparation.decorators import test
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 
 @transformer
 def transform(data, *args, **kwargs):
 
     # set the target year/quarter to previous quarter
-    now = kwargs.get('execution_date')
-    target = now - relativedelta(months=3)
-    year = target.year
-    quarter = pd.Timestamp(target).quarter
+    year, quarter = previous_quarter(kwargs['execution_date'])
 
     # start times should fall within the year and quarter (end times are coerced to 24 hours max duration)
     data = data.loc[
@@ -57,11 +53,6 @@ def transform(data, *args, **kwargs):
         (((data['end_lat'] >= -90) & (data['end_lat'] <= 90))) | (data['end_lat'].isna()) &
         (((data['end_lon'] >= -180) & (data['end_lon'] <= 180 | (data['end_lon'].isna()))))
         ]
-
-    # we will accept missing values for the following columns:
-        # plan_duration: should be a positive integer or 0 for single-day use
-        # passholder_type: '---'
-        # bike_type: '---'
 
     return data
 

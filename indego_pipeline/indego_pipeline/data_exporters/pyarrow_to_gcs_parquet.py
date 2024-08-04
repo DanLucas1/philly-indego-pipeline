@@ -1,18 +1,11 @@
-from mage_ai.settings.repo import get_repo_path
-from mage_ai.io.config import ConfigFileLoader
-from mage_ai.io.google_cloud_storage import GoogleCloudStorage
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
-import os
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from indego_pipeline.utils.set_date import previous_quarter
 import google.auth
 from google.cloud import storage
-from google.cloud import bigquery
 if 'data_exporter' not in globals():
     from mage_ai.data_preparation.decorators import data_exporter
-
 
 # default credentials will resolve to the attached service account
 credentials, project = google.auth.default()
@@ -22,10 +15,7 @@ print('authenticated google service account via default credentials')
 def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:    
 
     # set the target year/quarter to previous quarter
-    now = kwargs.get('execution_date')
-    target = now - relativedelta(months=3)
-    year = target.year
-    quarter = pd.Timestamp(target).quarter
+    year, quarter = previous_quarter(kwargs['execution_date'])
 
     # assign Y/M/D columns for cleaner partitioning
     df = df.assign(
@@ -34,7 +24,7 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
         M = df['start_time'].dt.month,
         D = df['start_time'].dt.day)
 
-    df = df.drop_duplicates(subset=['Y','Q','M','D'])
+    # df = df.drop_duplicates(subset=['Y','Q','M','D'])
 
     # specify schema for pyarrow table
     output_schema = pa.schema([
@@ -71,16 +61,12 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
     rides_filesystem = pa.fs.GcsFileSystem()
 
     # set parameters for path
-    bucket_name = 'indego_815299289556'
-    # bucket_name = kwargs.get('bucket_name')
-
-    # root_path = f'{bucket_name}/{year}/{month}/{day}'
-    root_path = bucket_name
+    bucket = kwargs['bucket_name']
 
     # write dataset to specified path
     pq.write_to_dataset(
         table,
-        root_path=root_path,
+        root_path=bucket,
         partition_cols=['Y', 'Q', 'M', 'D'],
         basename_template = 'trips{i}.parquet',
         filesystem = rides_filesystem

@@ -1,8 +1,6 @@
-import pandas as pd
-from pandas import DataFrame
-import google.auth
 import os
-from os import path
+import pandas as pd
+import google.auth
 import pandas_gbq
 from google.cloud import bigquery
 
@@ -33,14 +31,14 @@ bq_schema = [
 
 
 @data_exporter
-def export_data_to_big_query(df: DataFrame, **kwargs) -> None:
+def export_data_to_big_query(df: pd.DataFrame, **kwargs) -> None:
 
     ## ---- SETUP ----
 
     # specify cloud project resources
-    project_id = 'indego-pipeline'
-    dataset = 'indego_tripdata'
-    table_name = 'fact_indego_rides'
+    project_id = kwargs['project_id']
+    dataset = kwargs['bq_dataset']
+    table_name = kwargs['bq_table']
     table_id = f'{dataset}.{table_name}'
 
     # dataset partitioning and clustering

@@ -1,35 +1,26 @@
 import io
-import os
 import requests
 import zipfile
-from pyarrow import csv
 import pandas as pd
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from indego_pipeline.utils.set_date import previous_quarter
 
-if 'custom' not in globals():
-    from mage_ai.data_preparation.decorators import custom
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
 if 'test' not in globals():
     from mage_ai.data_preparation.decorators import test
 
-
 @data_loader
 def download_zip(zipfile_url, *args, **kwargs):
 
     # set the target year/quarter to previous quarter
-    now = kwargs.get('execution_date')
-    target = now - relativedelta(months=3)
-    year = target.year
-    quarter = pd.Timestamp(target).quarter
+    year, quarter = previous_quarter(kwargs['execution_date'])
 
     headers = {'user-agent': 'student-project', 'Accept-Encoding': 'identity'}
     response = requests.get(zipfile_url, headers=headers)
 
     local_zip_path = f'rides-{year}-q{quarter}.zip'
 
-    # define column dtypes for csv read    
+    # define column dtypes for csv read
     date_cols = ['start_time', 'end_time']
     dtypes = {
         'trip_id': 'Int64',
@@ -45,7 +36,6 @@ def download_zip(zipfile_url, *args, **kwargs):
         'trip_route_category': 'object',
         'passholder_type': 'object',
         'bike_type': 'object'}
-
 
     if response.status_code == 200:
         # writing file to the local disk

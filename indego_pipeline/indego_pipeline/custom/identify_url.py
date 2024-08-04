@@ -1,8 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from indego_pipeline.utils.set_date import previous_quarter
 
 if 'custom' not in globals():
     from mage_ai.data_preparation.decorators import custom
@@ -12,13 +11,9 @@ if 'test' not in globals():
 @custom
 def identify_zipfile(*args, **kwargs):
 
-    # set the target year/quarter to previous quarter
-    now = kwargs.get('execution_date')
-    target = now - relativedelta(months=3)
-    year = target.year
-    quarter = pd.Timestamp(target).quarter
+    year, quarter = previous_quarter(kwargs['execution_date'])
 
-    main_url = 'https://www.rideindego.com/about/data/'
+    indego_url = kwargs['indego_url']
 
     # retrieve HTML content
     headers = {'user-agent': 'student-project'}

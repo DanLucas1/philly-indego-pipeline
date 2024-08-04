@@ -1,16 +1,11 @@
 import pandas as pd
 import google.auth
-from pandas import DataFrame
-from os import path
 import pyarrow as pa
 import pyarrow.parquet as pq
 import pyarrow.dataset as ds
 import os
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from indego_pipeline.utils.set_date import previous_quarter
 
-
-from os import path
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
 if 'test' not in globals():
@@ -25,13 +20,10 @@ print('authenticated google service account via default credentials')
 def load_from_gcs(*args, **kwargs):
 
     # set the target year/quarter to previous quarter
-    now = kwargs.get('execution_date')
-    target = now - relativedelta(months=3)
-    year = target.year
-    quarter = pd.Timestamp(target).quarter
+    year, quarter = previous_quarter(kwargs['execution_date'])
 
     # bucket name matches bucket defined in variables.tf
-    bucket_name = 'indego_815299289556'
+    bucket_name = kwargs['bucket_name']
     gcs_path = f'{bucket_name}/Y={year}/Q={quarter}/'
 
     # generate GCS object
