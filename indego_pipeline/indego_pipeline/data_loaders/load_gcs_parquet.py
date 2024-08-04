@@ -5,7 +5,7 @@ import pyarrow.parquet as pq
 import pyarrow.dataset as ds
 import os
 from indego_pipeline.utils.set_date import previous_quarter
-from indego_pipeline.utils.schemas import pandas_dtypes
+from indego_pipeline.utils.schemas import dtypes_write
 
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
@@ -49,7 +49,7 @@ def load_from_gcs(*args, **kwargs):
         partitioning=partitioning)
 
     # cast dataset to pandas df
-    df = pq_from_gcs.to_table().to_pandas().astype(pandas_dtypes)
+    df = pq_from_gcs.to_table().to_pandas().astype(dtypes_write)
 
     # drop the partition columns
     df = df.drop(columns=['Y', 'Q', 'M', 'D'])
