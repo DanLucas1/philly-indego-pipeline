@@ -31,13 +31,13 @@ blocks:
   language: python
   name: load_rides_zip_csv
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks:
   - identify_url
   uuid: load_rides_zip_csv
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -48,16 +48,17 @@ blocks:
   language: python
   name: rides_data_cleanup
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: transformer
   upstream_blocks:
   - load_rides_zip_csv
   uuid: rides_data_cleanup
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
-  downstream_blocks: []
+  downstream_blocks:
+  - load_gcs_parquet
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -70,10 +71,63 @@ blocks:
   upstream_blocks:
   - rides_data_cleanup
   uuid: pyarrow_to_gcs_parquet
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    file_source:
+      path: data_loaders/load_gcs_parquet.py
+  downstream_blocks:
+  - write_to_bigquery
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load_gcs_parquet
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - pyarrow_to_gcs_parquet
+  uuid: load_gcs_parquet
+- all_upstream_blocks_executed: false
+  color: null
+  configuration:
+    file_source:
+      path: data_exporters/write_to_bigquery.py
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: write_to_bigquery
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - load_gcs_parquet
+  uuid: write_to_bigquery
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
-conditionals: []
+conditionals:
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: data_exists
+  retry_config: null
+  status: updated
+  timeout: null
+  type: conditional
+  upstream_blocks:
+  - identify_url
+  uuid: data_exists
 created_at: '2024-07-27 19:27:29.951258+00:00'
 data_integration: null
 description: null
@@ -81,7 +135,7 @@ executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: trips_to_gcs
+name: trips_csv_to_gcs_bigquery
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -91,8 +145,10 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: trips_to_gcs
+uuid: trips_csv_to_gcs_bigquery
 variables:
+  bq_dataset: indego_tripdata
+  bq_table: fact_indego_rides
   bucket_name: indego_815299289556
   indego_url: https://www.rideindego.com/about/data/
   project_id: indego-pipeline

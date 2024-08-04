@@ -55,6 +55,12 @@ def transform(data, *args, **kwargs):
         (((data['end_lon'] >= -180) & (data['end_lon'] <= 180 | (data['end_lon'].isna()))))
         ]
 
+    # column bike_type was not present until Q3 2018 data
+    if year < 2018 or (year <= 2018 and quarter <= 2) and 'bike_type' not in data.columns:
+        data = data.assign(bike_type = '')
+
+
+    # ensure proper dtypes
     data = data.astype(dtypes_write)
 
     return data
@@ -64,9 +70,11 @@ def test_output(output, *args) -> None:
 
     # check that all column dtypes match the required schema
     dtype_mismatch = [
-        col for col in output.columns if
-        col in dtypes_write.keys() and output[col].dtype != dtypes_write[col]
-        ]
+        col for col in output.columns
+        if col in dtypes_write.keys()
+        and output[col].dtype != dtypes_write[col]
+    ]
+
     dtypes_correct = len(dtype_mismatch) == 0
 
     # check that all columns are present

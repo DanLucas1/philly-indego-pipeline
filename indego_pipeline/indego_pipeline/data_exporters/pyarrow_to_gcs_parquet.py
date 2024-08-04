@@ -25,7 +25,7 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
         M = df['start_time'].dt.month,
         D = df['start_time'].dt.day)
 
-    df = df.drop_duplicates(subset=['Y','Q','M','D'])
+    # df = df.drop_duplicates(subset=['Y','Q','M','D']) # for pipeline testing
 
     try:
         table = pa.Table.from_pandas(df, schema=arrow_schema, preserve_index=False)

@@ -16,6 +16,10 @@ def download_zip(zipfile_url, *args, **kwargs):
     # set the target year/quarter to previous quarter
     year, quarter = previous_quarter(kwargs['execution_date'])
 
+    # bike_type was not introduced until Q3 2018
+    if year <= 2018 and quarter <= 2:
+        del dtypes_read['bike_type']
+
     headers = {'user-agent': 'student-project', 'Accept-Encoding': 'identity'}
     response = requests.get(zipfile_url, headers=headers)
 

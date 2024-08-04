@@ -38,8 +38,7 @@ def identify_zipfile(*args, **kwargs):
     urls = [url for url in urls
         if 'trips' in url
         and 'wp-content' in url
-        and f'{year}' in url
-        and f'q{quarter}' in url]
+        and f'{year}-q{quarter}' in url]
     
     # there should be only 1 url that matches the year and quarter in question
     if len(urls) == 1:
