@@ -26,6 +26,16 @@ variable "bq_dataset_name" {
   default     = "indego_tripdata"
 }
 
+variable "bq_dev_dataset_name" {
+  description = "Dev dataset for BigQuery dbt"
+  default     = "indego_dev"
+}
+
+variable "bq_prod_dataset_name" {
+  description = "Prod dataset for BigQuery dbt"
+  default     = "indego_prod"
+}
+
 # CLOUD STORAGE
 variable "gcs_bucket_name" {
   description = "My Storage Bucket Name"
