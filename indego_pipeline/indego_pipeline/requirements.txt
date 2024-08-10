@@ -2,4 +2,5 @@ google-cloud-storage
 google-cloud-bigquery
 google-cloud-dataproc
 pandas-gbq
-
+shapely
+geopandas

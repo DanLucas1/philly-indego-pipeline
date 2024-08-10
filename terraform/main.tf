@@ -46,3 +46,17 @@ resource "google_bigquery_dataset" "bq-dataset" {
   dataset_id = var.bq_dataset_name
   location   = var.location
 }
+
+
+# CREATE BIGQUERY DATASET
+resource "google_bigquery_dataset" "bq-dataset-dev" {
+  dataset_id = var.bq_dev_dataset_name
+  location   = var.location
+}
+
+
+# CREATE BIGQUERY DATASET
+resource "google_bigquery_dataset" "bq-dataset-prod" {
+  dataset_id = var.bq_prod_dataset_name
+  location   = var.location
+}
