@@ -31,24 +31,24 @@ blocks:
   language: python
   name: load_rides_zip_csv
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_loader
   upstream_blocks:
   - identify_url
   uuid: load_rides_zip_csv
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
-  - pyarrow_to_gcs_parquet
+  - label_neighborhoods
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
   name: rides_data_cleanup
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
@@ -65,11 +65,11 @@ blocks:
   language: python
   name: pyarrow_to_gcs_parquet
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - rides_data_cleanup
+  - label_neighborhoods
   uuid: pyarrow_to_gcs_parquet
 - all_upstream_blocks_executed: false
   color: null
@@ -108,6 +108,40 @@ blocks:
   upstream_blocks:
   - load_gcs_parquet
   uuid: write_to_bigquery
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - label_neighborhoods
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: load_philadelphia_neighborhoods
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks: []
+  uuid: load_philadelphia_neighborhoods
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - pyarrow_to_gcs_parquet
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: label_neighborhoods
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks:
+  - rides_data_cleanup
+  - load_philadelphia_neighborhoods
+  uuid: label_neighborhoods
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -151,6 +185,7 @@ variables:
   bq_table: fact_indego_rides
   bucket_name: indego_815299289556
   indego_url: https://www.rideindego.com/about/data/
+  neighborhood_file_url: https://raw.githubusercontent.com/opendataphilly/open-geo-data/master/philadelphia-neighborhoods/philadelphia-neighborhoods.geojson
   project_id: indego-pipeline
 variables_dir: /home/src/mage_data/indego_pipeline
 widgets: []
