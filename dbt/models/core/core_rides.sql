@@ -8,9 +8,9 @@
 WITH rides AS (
     SELECT
         trip_id,
-        duration,
         start_time,
         end_time,
+        duration,
         start_station,
         start_lat,
         start_lon,
@@ -39,29 +39,37 @@ stations AS (
     FROM {{ ref('stations') }})
 
 SELECT
+    -- trip information
     r.trip_id,
-    r.duration,
     r.start_time,
     r.end_time,
-    r.start_station,
+    r.duration,
+    r.trip_route_category,
+
+    -- start and end location details
     r.start_lat,
     r.start_lon,
-    r.end_station,
-    r.end_lat,
-    r.end_lon,
-    r.bike_id,
-    r.plan_duration,
-    r.trip_route_category,
-    r.passholder_type,
-    r.bike_type,
-    r.start_neighborhood,
-    r.end_neighborhood,
+    r.start_station,
     ss.station_name AS start_station_name,
     ss.go_live_date AS start_station_go_live_date,
     ss.station_status AS start_station_status,
+    r.start_neighborhood,
+    r.end_lat,
+    r.end_lon,
+    r.end_station,
     se.station_name AS end_station_name,
     se.go_live_date AS end_station_go_live_date,
     se.station_status AS end_station_status,
+    r.end_neighborhood,
+
+    -- bike details
+    r.bike_id,
+    r.bike_type,
+
+    -- rider details
+    r.plan_duration,
+    r.passholder_type
+
 FROM rides r
 LEFT JOIN stations ss ON r.start_station = ss.station_id
 LEFT JOIN stations se ON r.end_station = se.station_id
