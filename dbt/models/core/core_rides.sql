@@ -39,12 +39,16 @@ stations AS (
     FROM {{ ref('stations') }})
 
 SELECT
-    -- trip information
+    -- ride information
     r.trip_id,
     r.start_time,
     r.end_time,
     r.duration,
     r.trip_route_category,
+    ST_DISTANCE(
+        ST_GEOGPOINT(r.start_lon, r.start_lat),
+        ST_GEOGPOINT(r.end_lon, r.end_lat),
+        TRUE) * 0.000621371 AS station_distance_miles,
 
     -- start and end location details
     r.start_lat,
