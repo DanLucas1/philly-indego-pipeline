@@ -172,3 +172,4 @@ scratch*
 magic-zoomcamp
 *.json
 
+!REPLACE_ME_WITH_CREDENTIALS.json
