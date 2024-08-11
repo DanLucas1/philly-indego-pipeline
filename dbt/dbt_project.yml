@@ -41,3 +41,4 @@ vars:
   'dbt_date:time_zone': 'America/New_York'
   bike_types: ['electric', 'standard', 'unknown', '']
   trip_types: ['Round Trip', 'One Way']
+  station_statuses: ['Active', 'Inactive']

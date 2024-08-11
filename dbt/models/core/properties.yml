@@ -91,7 +91,7 @@ models:
         description: "Indicator showing whether a station is active or inactive"
         tests:
           - accepted_values:
-              values: ['Active', 'Inactive']
+              values: "{{ var('station_statuses') }}"
               where: start_station_status IS NOT NULL
 
       # end station may be missing (e.g. riders not checking in bikes correctly) so testing is less rigorous
@@ -112,5 +112,5 @@ models:
         description: "Indicator showing whether a station is active as of the last station list update"
         tests:
           - accepted_values:
-              values: ['Active', 'Inactive']
+              values: "{{ var('station_statuses') }}"
               where: end_station_status IS NOT NULL
