@@ -1,0 +1,116 @@
+models:
+  - name: core_rides
+    description: "Production Indego rides table"
+    columns:
+
+      # columns pre-tested in staging
+      - name: trip_id
+        data_type: int64
+        description: "Unique ride identifier"
+        
+      - name: duration
+        data_type: int64
+        description: "Ride duration in minutes"
+
+      - name: start_time
+        data_type: timestamp
+        description: "Trip start time in EST"
+
+      - name: end_time
+        data_type: timestamp
+        description: "Trip end time in EST"
+
+      - name: start_station
+        data_type: int64
+        description: "The station ID where the trip originated"
+
+      - name: start_lat
+        data_type: numeric
+        description: "The latitude of the station where the trip originated"
+
+      - name: start_lon
+        data_type: numeric
+        description: "The longitude of the station where the trip originated"
+
+      - name: end_station
+        data_type: int64
+        description: "The station ID where the trip finished"
+
+      - name: end_lat
+        data_type: numeric
+        description: "The latitude of the station where the trip terminated"
+
+      - name: end_lon
+        data_type: numeric
+        description: "The longitude of the station where the trip terminated"
+
+      - name: bike_id
+        data_type: int64
+        description: "Unique bike identifier"
+
+      - name: plan_duration
+        data_type: int64
+        description: "The number of days that the plan the passholder is using entitles them to ride; 0 is used for a single ride plan (Walk-up)"
+
+      - name: trip_route_category
+        data_type: string
+        description: "'Round Trip' for trips starting and ending at the same station or 'One Way' for all other trips"
+
+      - name: passholder_type
+        data_type: string
+        description: "The name of the passholder's plan"
+
+      - name: bike_type
+        data_type: string
+        description: "The kind of bike used on the trip, including standard pedal-powered bikes or electric assist bikes"
+
+      - name: start_neighborhood
+        data_type: string
+        description: "Neighborhood matching the starting latitude and longitude of the trip"
+
+      - name: end_neighborhood
+        data_type: string
+        description: "Neighborhood matching the ending latitude and longitude of the trip"
+
+    # new columns merged from station lookup seed
+
+    # rides should always start at an Indego station - comprehensively test for completeness and accepted values
+      - name: start_station_name
+        data_type: string
+        description: "Name of the station where the trip began"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stations')
+              field: station_name
+
+      - name: start_station_go_live_date
+        data_type: date
+        description: "Go-live date for the station where the trip began"
+        tests:
+          - not_null
+
+      - name: start_station_status
+        data_type: string
+        description: "Indicator showing whether a station is active or inactive"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['Active', 'Inactive']
+
+      # end station may be missing (e.g. riders not checking in bikes correctly) so testing is less rigorous
+      - name: end_station_name
+        data_type: string
+        description: "Name of the station where the trip ended"
+        tests:
+          - relationships:
+              to: ref('stations')
+              field: station_name
+
+      - name: end_station_go_live_date
+        data_type: date
+        description: "Go-live date for the station where the trip began"
+
+      - name: end_station_status
+        data_type: string
+        description: "Indicator showing whether a station is active as of the last station list update"

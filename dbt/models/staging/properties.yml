@@ -1,0 +1,145 @@
+version: 2
+
+sources:
+  - name: indego_dwh
+    database: indego-pipeline
+    schema: indego_tripdata
+    tables:
+      - name: fact_indego_rides
+
+models:
+  - name: stg_rides
+    description: "Staging table for rides data"
+    columns:
+      - name: trip_id
+        data_type: int64
+        description: "Unique ride identifier"
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+
+      - name: duration
+        data_type: int64
+        description: "Ride duration in minutes"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 1440  # Indego publishes trips with duration coerced to 24 hours maximum
+              severity: warn
+
+      - name: start_time
+        data_type: timestamp
+        description: "Trip start time in EST"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: "'2017-06-30'" # first data available is 2017 Q3
+              max_value: "CURRENT_TIMESTAMP()"
+
+      - name: end_time
+        data_type: timestamp
+        description: "Trip end time in EST"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: "'2017-06-30'" # first data available is 2017 Q3
+              max_value: "CURRENT_TIMESTAMP()"
+
+      - name: start_station
+        data_type: int64
+        description: "The station ID where the trip originated"
+
+      - name: start_lat
+        data_type: numeric
+        description: "The latitude of the station where the trip originated"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 39.5
+              max_value: 40.5
+              where: start_lat IS NOT NULL
+              severity: warn
+
+      - name: start_lon
+        data_type: numeric
+        description: "The longitude of the station where the trip originated"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -75.5
+              max_value: -74.5
+              where: start_lon IS NOT NULL
+              severity: warn
+
+      - name: end_station
+        data_type: int64
+        description: "The station ID where the trip finished"
+    
+      - name: end_lat
+        data_type: numeric
+        description: "The latitude of the station where the trip terminated"
+        tests:
+        - dbt_utils.accepted_range:
+            min_value: 39.5
+            max_value: 40.5
+            where: end_lat IS NOT NULL
+            severity: warn
+
+      - name: end_lon
+        data_type: numeric
+        description: "The longitude of the station where the trip terminated"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: -75.5
+              max_value: -74.5
+              where: end_lon IS NOT NULL
+              severity: warn
+    
+      - name: bike_id
+        data_type: int64
+        description: "Unique bike identifier"
+        tests:
+          - not_null
+
+      - name: plan_duration
+        data_type: int64
+        description: "The number of days that the plan the passholder is using entitles them to ride; 0 is used for a single ride plan (Walk-up)"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 365
+
+      - name: trip_route_category
+        data_type: string
+        description: "'Round Trip' for trips starting and ending at the same station or 'One Way' for all other trips"
+        tests:
+          - accepted_values:
+              values: "{{ var('trip_types') }}"
+
+      - name: passholder_type
+        data_type: string
+        description: "The name of the passholder's plan"
+
+      - name: bike_type
+        description: "The kind of bike used on the trip, including standard pedal-powered bikes or electric assist bikes"
+        tests:
+          - accepted_values:
+              values: "{{ var('bike_types') }}"
+
+      - name: start_neighborhood
+        data_type: string
+        description: "Neighborhood matching the starting latitude and longitude of the trip"
+        tests:
+          - not_null
+
+      - name: end_neighborhood
+        data_type: string
+        description: "Neighborhood matching the ending latitude and longitude of the trip"
+        tests:
+          - not_null
+
+    tests:
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          column_A: end_time
+          column_B: start_time
+          or_equal: True
