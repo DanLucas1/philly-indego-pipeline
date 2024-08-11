@@ -5,7 +5,7 @@ variable "location" {
 
 variable "credentials" {
   description = "Credentials for Terraform service account"
-  default     = "./keys/service_acct_creds.json"
+  default     = "../indego_pipeline/service_acct_creds.json"
 }
 
 variable "region" {
