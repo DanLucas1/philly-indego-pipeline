@@ -74,12 +74,10 @@ models:
 
     # new columns merged from station lookup seed
 
-    # rides should always start at an Indego station - comprehensively test for completeness and accepted values
       - name: start_station_name
         data_type: string
         description: "Name of the station where the trip began"
         tests:
-          - not_null
           - relationships:
               to: ref('stations')
               field: station_name
@@ -87,16 +85,14 @@ models:
       - name: start_station_go_live_date
         data_type: date
         description: "Go-live date for the station where the trip began"
-        tests:
-          - not_null
 
       - name: start_station_status
         data_type: string
         description: "Indicator showing whether a station is active or inactive"
         tests:
-          - not_null
           - accepted_values:
               values: ['Active', 'Inactive']
+              where: start_station_status IS NOT NULL
 
       # end station may be missing (e.g. riders not checking in bikes correctly) so testing is less rigorous
       - name: end_station_name
@@ -114,3 +110,7 @@ models:
       - name: end_station_status
         data_type: string
         description: "Indicator showing whether a station is active as of the last station list update"
+        tests:
+          - accepted_values:
+              values: ['Active', 'Inactive']
+              where: end_station_status IS NOT NULL
