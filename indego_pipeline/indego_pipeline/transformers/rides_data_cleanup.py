@@ -47,18 +47,20 @@ def transform(data, *args, **kwargs):
     # remove duplicate trip_ids
     data = data.drop_duplicates(subset='trip_id', ignore_index=True)
 
-    # remove rides with invalid latitude or longitudes (but keep nulls)
-    data = data.loc[
-        (((data['start_lat'] >= -90) & (data['start_lat'] <= 90))) | (data['start_lat'].isna()) &
-        (((data['start_lon'] >= -180) & (data['start_lon'] <= 180))) | (data['start_lon'].isna()) &
-        (((data['end_lat'] >= -90) & (data['end_lat'] <= 90))) | (data['end_lat'].isna()) &
-        (((data['end_lon'] >= -180) & (data['end_lon'] <= 180 | (data['end_lon'].isna()))))
-        ]
+    # correct improperly signed lat/lon and keep valid coordinates and nulls
+    lat_cols = [col for col in data.columns if col.endswith('_lat')]
+    for col in lat_cols:
+        data[col] = data[col].abs()
+        data = data.loc[((data[col] >= 39.5) & (data[col] <= 40.5)) | (data[col].isna())]
+
+    lon_cols = [col for col in data.columns if col.endswith('_lon')]
+    for col in lon_cols:
+        data[col] = -1 * data[col].abs()  # Ensure longitude is negative
+        data = data.loc[((data[col] >= -75.5) & (data[col] <= -74.5)) | (data[col].isna())]
 
     # column bike_type was not present until Q3 2018 data
     if year < 2018 or (year <= 2018 and quarter <= 2) and 'bike_type' not in data.columns:
         data = data.assign(bike_type = '')
-
 
     # ensure proper dtypes
     data = data.astype(dtypes_write)
