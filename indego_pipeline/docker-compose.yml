@@ -2,7 +2,7 @@ services:
   magic:
     image: mageai/mageai:latest
     env_file:
-      - .env
+      - dev.env
     command: mage start indego_pipeline
     build:
       context: .

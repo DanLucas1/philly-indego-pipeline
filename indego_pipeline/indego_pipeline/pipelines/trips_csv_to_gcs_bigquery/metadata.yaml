@@ -41,7 +41,7 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - label_neighborhoods
+  - pyarrow_to_gcs_parquet
   executor_config: null
   executor_type: local_python
   has_callback: false
@@ -54,7 +54,7 @@ blocks:
   upstream_blocks:
   - load_rides_zip_csv
   uuid: rides_data_cleanup
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
@@ -69,9 +69,9 @@ blocks:
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - label_neighborhoods
+  - rides_data_cleanup
   uuid: pyarrow_to_gcs_parquet
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     file_source:
@@ -90,7 +90,7 @@ blocks:
   upstream_blocks:
   - pyarrow_to_gcs_parquet
   uuid: load_gcs_parquet
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     file_source:
@@ -108,40 +108,6 @@ blocks:
   upstream_blocks:
   - load_gcs_parquet
   uuid: write_to_bigquery
-- all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - label_neighborhoods
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: load_philadelphia_neighborhoods
-  retry_config: null
-  status: updated
-  timeout: null
-  type: data_loader
-  upstream_blocks: []
-  uuid: load_philadelphia_neighborhoods
-- all_upstream_blocks_executed: false
-  color: null
-  configuration: {}
-  downstream_blocks:
-  - pyarrow_to_gcs_parquet
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: label_neighborhoods
-  retry_config: null
-  status: executed
-  timeout: null
-  type: custom
-  upstream_blocks:
-  - rides_data_cleanup
-  - load_philadelphia_neighborhoods
-  uuid: label_neighborhoods
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
