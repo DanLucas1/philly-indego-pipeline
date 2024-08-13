@@ -122,10 +122,7 @@ tags: []
 type: python
 uuid: stations_to_gcs_bq
 variables:
-  bq_dataset: indego_tripdata
-  bq_table: stations
-  bucket_name: indego_815299289556
+  bq_table: indego_stations
   indego_url: https://www.rideindego.com/about/data/
-  project_id: indego-pipeline
 variables_dir: /home/src/mage_data/indego_pipeline
 widgets: []

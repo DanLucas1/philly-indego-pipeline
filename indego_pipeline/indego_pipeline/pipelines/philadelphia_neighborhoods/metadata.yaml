@@ -73,11 +73,8 @@ tags: []
 type: python
 uuid: philadelphia_neighborhoods
 variables:
-  bq_dataset: indego_tripdata
   bq_table: philadelphia_neighborhoods
-  dataset: indego_tripdata
   neighborhood_file_url: https://raw.githubusercontent.com/opendataphilly/open-geo-data/master/philadelphia-neighborhoods/philadelphia-neighborhoods.geojson
-  project_id: indego-pipeline
   table_name: philadelphia_neighborhoods
 variables_dir: /home/src/mage_data/indego_pipeline
 widgets: []

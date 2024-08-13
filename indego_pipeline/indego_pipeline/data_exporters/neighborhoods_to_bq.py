@@ -14,6 +14,10 @@ print('authenticated google service account via default credentials')
 @data_exporter
 def export_data_to_big_query(df: pd.DataFrame, **kwargs) -> None:
 
+    test = os.environ.get('PROJECT_NAME')
+    print(type(test))
+    print(test[:-1])
+    print('P' in test)
     # ---- SETUP ----
 
     # specify cloud project resources
@@ -52,4 +56,4 @@ def export_data_to_big_query(df: pd.DataFrame, **kwargs) -> None:
             if_exists='replace')
         print(f'wrote {df.shape[0]} records to dataset {project_id}.{table_id}')
     except Exception as E:
-        print(f'could not write data to BigQuery: {E}')
+        print(f'could not write data to BigQuery: {E}') 
