@@ -17,7 +17,7 @@ def load_philadelphia_neighborhoods(*args, **kwargs):
     gdf = gpd.read_file(f'geojson:{url}')
     gdf.geometry = gdf.geometry.to_crs('EPSG:4326')
 
-    # convert to pandas df to pass between blocks
+    # convert geometry to WKT so a pandas df can pass between blocks (geopandas df can not)
     df = pd.DataFrame(gdf)
     df['geometry'] = df['geometry'].apply(lambda geom: geom.wkt)
 
@@ -25,4 +25,6 @@ def load_philadelphia_neighborhoods(*args, **kwargs):
 
 @test
 def test_output(output, *args) -> None:
+    'Geometry' in output.columns, 'missing geometry column'
+    any('name' in col.lower() for col in output.columns), 'missing neighborhood name column'
     assert output is not None, 'The output is undefined'

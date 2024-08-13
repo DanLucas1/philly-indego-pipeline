@@ -44,13 +44,13 @@ blocks:
   language: python
   name: station_data_cleanup
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: transformer
   upstream_blocks:
   - read_station_csv
   uuid: station_data_cleanup
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks: []
@@ -66,7 +66,7 @@ blocks:
   upstream_blocks:
   - station_data_cleanup
   uuid: stations_to_bq
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks: []
