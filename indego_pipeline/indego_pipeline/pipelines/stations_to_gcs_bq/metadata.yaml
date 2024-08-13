@@ -1,4 +1,87 @@
-blocks: []
+blocks:
+- all_upstream_blocks_executed: true
+  color: grey
+  configuration: {}
+  downstream_blocks:
+  - read_station_csv
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: id_station_url
+  retry_config: null
+  status: executed
+  timeout: null
+  type: custom
+  upstream_blocks: []
+  uuid: id_station_url
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - station_data_cleanup
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: read_station_csv
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - id_station_url
+  uuid: read_station_csv
+- all_upstream_blocks_executed: true
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - stations_to_bq
+  - stations_to_gcs
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: station_data_cleanup
+  retry_config: null
+  status: updated
+  timeout: null
+  type: transformer
+  upstream_blocks:
+  - read_station_csv
+  uuid: station_data_cleanup
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: stations_to_bq
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - station_data_cleanup
+  uuid: stations_to_bq
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: stations_to_gcs
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - station_data_cleanup
+  uuid: stations_to_gcs
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
@@ -38,5 +121,11 @@ spark_config: {}
 tags: []
 type: python
 uuid: stations_to_gcs_bq
+variables:
+  bq_dataset: indego_tripdata
+  bq_table: stations
+  bucket_name: indego_815299289556
+  indego_url: https://www.rideindego.com/about/data/
+  project_id: indego-pipeline
 variables_dir: /home/src/mage_data/indego_pipeline
 widgets: []

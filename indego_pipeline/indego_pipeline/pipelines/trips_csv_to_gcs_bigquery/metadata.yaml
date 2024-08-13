@@ -31,13 +31,13 @@ blocks:
   language: python
   name: load_rides_zip_csv
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks:
   - identify_url
   uuid: load_rides_zip_csv
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -48,13 +48,13 @@ blocks:
   language: python
   name: rides_data_cleanup
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: transformer
   upstream_blocks:
   - load_rides_zip_csv
   uuid: rides_data_cleanup
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -65,13 +65,13 @@ blocks:
   language: python
   name: pyarrow_to_gcs_parquet
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_exporter
   upstream_blocks:
   - rides_data_cleanup
   uuid: pyarrow_to_gcs_parquet
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration:
     file_source:
@@ -90,7 +90,7 @@ blocks:
   upstream_blocks:
   - pyarrow_to_gcs_parquet
   uuid: load_gcs_parquet
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration:
     file_source:
@@ -102,7 +102,7 @@ blocks:
   language: python
   name: write_to_bigquery
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_exporter
   upstream_blocks:

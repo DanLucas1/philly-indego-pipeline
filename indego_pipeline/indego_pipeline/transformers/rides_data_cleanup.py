@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from indego_pipeline.utils.set_date import previous_quarter
-from indego_pipeline.utils.schemas import dtypes_write
+from indego_pipeline.utils.ride_schemas import dtypes_write
 if 'transformer' not in globals():
     from mage_ai.data_preparation.decorators import transformer
 if 'test' not in globals():

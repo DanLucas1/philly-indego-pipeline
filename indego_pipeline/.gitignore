@@ -171,5 +171,3 @@ scratch*
 *secrets*.json
 magic-zoomcamp
 *.json
-
-!service_acct_creds.json
