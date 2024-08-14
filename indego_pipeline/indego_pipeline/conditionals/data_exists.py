@@ -2,6 +2,7 @@ from indego_pipeline.utils.set_date import previous_quarter
 import google.auth
 from google.cloud import storage
 import sys
+import os
 if 'condition' not in globals():
     from mage_ai.data_preparation.decorators import condition
 
@@ -19,7 +20,7 @@ def evaluate_condition(*args, **kwargs) -> bool:
     storage_client = storage.Client()
 
     # construct blob path to check
-    bucket_name = kwargs['bucket_name']
+    bucket_name = os.environ.get('GCS_BUCKET')
     blob_path = f'Y={year}/Q={quarter}/'
     
     # build bucket and blob objects

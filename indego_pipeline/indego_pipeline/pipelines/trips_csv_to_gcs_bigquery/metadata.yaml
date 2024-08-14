@@ -12,12 +12,12 @@ blocks:
   language: python
   name: identify_url
   retry_config: null
-  status: updated
+  status: executed
   timeout: null
   type: custom
   upstream_blocks: []
   uuid: identify_url
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     file_path: data_loaders/load_rides_zip_csv.py
@@ -37,7 +37,7 @@ blocks:
   upstream_blocks:
   - identify_url
   uuid: load_rides_zip_csv
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
@@ -54,7 +54,7 @@ blocks:
   upstream_blocks:
   - load_rides_zip_csv
   uuid: rides_data_cleanup
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
@@ -71,7 +71,7 @@ blocks:
   upstream_blocks:
   - rides_data_cleanup
   uuid: pyarrow_to_gcs_parquet
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     file_source:
@@ -90,7 +90,7 @@ blocks:
   upstream_blocks:
   - pyarrow_to_gcs_parquet
   uuid: load_gcs_parquet
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration:
     file_source:
@@ -112,7 +112,7 @@ cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
 conditionals:
-- all_upstream_blocks_executed: false
+- all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks: []

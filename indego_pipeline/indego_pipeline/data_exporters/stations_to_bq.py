@@ -17,8 +17,8 @@ def export_data_to_big_query(df: pd.DataFrame, **kwargs) -> None:
     ## ---- SETUP ----
 
     # specify cloud project resources
-    project_id = kwargs['project_id']
-    dataset = kwargs['bq_dataset']
+    project_id = os.environ.get('GCLOUD_PROJECT')
+    dataset = os.environ.get('BQ_DATASET')
     table_name = kwargs['bq_table']
     table_id = f'{dataset}.{table_name}'
 

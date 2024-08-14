@@ -24,7 +24,7 @@ def load_from_gcs(*args, **kwargs):
     year, quarter = previous_quarter(kwargs['execution_date'])
 
     # bucket name matches bucket defined in variables.tf
-    bucket_name = kwargs['bucket_name']
+    bucket_name = os.environ.get('GCS_BUCKET')
     gcs_path = f'{bucket_name}/Y={year}/Q={quarter}/'
 
     # generate GCS object

@@ -26,13 +26,13 @@ blocks:
   language: python
   name: read_station_csv
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
   type: data_loader
   upstream_blocks:
   - id_station_url
   uuid: read_station_csv
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks:
@@ -50,7 +50,7 @@ blocks:
   upstream_blocks:
   - read_station_csv
   uuid: station_data_cleanup
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks: []
@@ -66,7 +66,7 @@ blocks:
   upstream_blocks:
   - station_data_cleanup
   uuid: stations_to_bq
-- all_upstream_blocks_executed: true
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
   downstream_blocks: []

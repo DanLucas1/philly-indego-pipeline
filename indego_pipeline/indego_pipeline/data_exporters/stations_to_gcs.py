@@ -2,6 +2,7 @@ import pandas as pd
 import google.auth
 from google.cloud import storage
 import sys
+import os
 
 if 'data_exporter' not in globals():
     from mage_ai.data_preparation.decorators import data_exporter
@@ -19,7 +20,7 @@ def gcs_export_single_file(df, *args, **kwargs):
     storage_client = storage.Client()
 
     # construct blob path to check
-    bucket_name = kwargs['bucket_name']
+    bucket_name = os.environ.get('GCS_BUCKET')
     filename = 'stations_list.csv'
     blob_path = f'station_data/{filename}'
     

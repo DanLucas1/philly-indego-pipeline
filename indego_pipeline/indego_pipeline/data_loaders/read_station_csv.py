@@ -10,7 +10,7 @@ if 'test' not in globals():
 @data_loader
 def load_data_from_api(url, *args, **kwargs):
 
-    headers = {'User-Agent': 'Mozilla/5.0'}
+    headers = {'User-Agent': 'student-project'}
     parse_dates = ['Day of Go_live_date']
 
     return pd.read_csv(url, sep=',', storage_options=headers, parse_dates=parse_dates)
