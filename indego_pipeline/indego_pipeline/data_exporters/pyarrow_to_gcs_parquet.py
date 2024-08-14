@@ -1,8 +1,9 @@
+import os
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 from indego_pipeline.utils.set_date import previous_quarter
-from indego_pipeline.utils.schemas import arrow_schema
+from indego_pipeline.utils.ride_schemas import arrow_schema
 import google.auth
 from google.cloud import storage
 if 'data_exporter' not in globals():
@@ -39,7 +40,7 @@ def export_data_to_google_cloud_storage(df: pd.DataFrame, **kwargs) -> None:
     rides_filesystem = pa.fs.GcsFileSystem()
 
     # set parameters for path
-    bucket = kwargs['bucket_name']
+    bucket = os.environ.get('GCS_BUCKET')
 
     # write dataset to specified path
     pq.write_to_dataset(

@@ -15,15 +15,6 @@ provider "google" {
   region      = var.region
 }
 
-# ENABLE APIS
-
-# Enable IAM API
-resource "google_project_service" "iam" {
-  service            = "iam.googleapis.com"
-  disable_on_destroy = false
-}
-
-
 # CREATE CLOUD STORAGE BUCKET
 resource "google_storage_bucket" "indego_storage" {
   name          = var.gcs_bucket_name

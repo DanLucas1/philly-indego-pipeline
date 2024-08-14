@@ -1,120 +1,96 @@
 blocks:
 - all_upstream_blocks_executed: true
-  color: teal
-  configuration:
-    file_source:
-      path: custom/identify_url.py
+  color: grey
+  configuration: {}
   downstream_blocks:
-  - load_rides_zip_csv
+  - read_station_csv
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: identify_url
+  name: id_station_url
   retry_config: null
   status: executed
   timeout: null
   type: custom
   upstream_blocks: []
-  uuid: identify_url
-- all_upstream_blocks_executed: true
-  color: null
-  configuration:
-    file_path: data_loaders/load_rides_zip_csv.py
-    file_source:
-      path: data_loaders/load_rides_zip_csv.py
-  downstream_blocks:
-  - rides_data_cleanup
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: load_rides_zip_csv
-  retry_config: null
-  status: executed
-  timeout: null
-  type: data_loader
-  upstream_blocks:
-  - identify_url
-  uuid: load_rides_zip_csv
+  uuid: id_station_url
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
-  - pyarrow_to_gcs_parquet
+  - station_data_cleanup
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: rides_data_cleanup
+  name: read_station_csv
+  retry_config: null
+  status: updated
+  timeout: null
+  type: data_loader
+  upstream_blocks:
+  - id_station_url
+  uuid: read_station_csv
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks:
+  - stations_to_bq
+  - stations_to_gcs
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: station_data_cleanup
   retry_config: null
   status: executed
   timeout: null
   type: transformer
   upstream_blocks:
-  - load_rides_zip_csv
-  uuid: rides_data_cleanup
-- all_upstream_blocks_executed: true
+  - read_station_csv
+  uuid: station_data_cleanup
+- all_upstream_blocks_executed: false
   color: null
   configuration: {}
-  downstream_blocks:
-  - load_gcs_parquet
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: pyarrow_to_gcs_parquet
-  retry_config: null
-  status: executed
-  timeout: null
-  type: data_exporter
-  upstream_blocks:
-  - rides_data_cleanup
-  uuid: pyarrow_to_gcs_parquet
-- all_upstream_blocks_executed: true
-  color: null
-  configuration:
-    file_source:
-      path: data_loaders/load_gcs_parquet.py
-  downstream_blocks:
-  - write_to_bigquery
-  executor_config: null
-  executor_type: local_python
-  has_callback: false
-  language: python
-  name: load_gcs_parquet
-  retry_config: null
-  status: executed
-  timeout: null
-  type: data_loader
-  upstream_blocks:
-  - pyarrow_to_gcs_parquet
-  uuid: load_gcs_parquet
-- all_upstream_blocks_executed: true
-  color: null
-  configuration:
-    file_source:
-      path: data_exporters/write_to_bigquery.py
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
   has_callback: false
   language: python
-  name: write_to_bigquery
+  name: stations_to_bq
   retry_config: null
   status: executed
   timeout: null
   type: data_exporter
   upstream_blocks:
-  - load_gcs_parquet
-  uuid: write_to_bigquery
+  - station_data_cleanup
+  uuid: stations_to_bq
+- all_upstream_blocks_executed: false
+  color: null
+  configuration: {}
+  downstream_blocks: []
+  executor_config: null
+  executor_type: local_python
+  has_callback: false
+  language: python
+  name: stations_to_gcs
+  retry_config: null
+  status: executed
+  timeout: null
+  type: data_exporter
+  upstream_blocks:
+  - station_data_cleanup
+  uuid: stations_to_gcs
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
 conditionals:
 - all_upstream_blocks_executed: true
   color: null
-  configuration: {}
+  configuration:
+    file_source:
+      path: conditionals/data_exists.py
   downstream_blocks: []
   executor_config: null
   executor_type: local_python
@@ -122,20 +98,19 @@ conditionals:
   language: python
   name: data_exists
   retry_config: null
-  status: updated
+  status: not_executed
   timeout: null
   type: conditional
-  upstream_blocks:
-  - identify_url
+  upstream_blocks: []
   uuid: data_exists
-created_at: '2024-07-27 19:27:29.951258+00:00'
+created_at: '2024-08-13 09:44:00.377141+00:00'
 data_integration: null
 description: null
 executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: trips_csv_to_gcs_bigquery
+name: stations_to_gcs_bq
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -145,10 +120,9 @@ settings:
 spark_config: {}
 tags: []
 type: python
-uuid: trips_csv_to_gcs_bigquery
+uuid: stations_to_gcs_bq
 variables:
-  bq_table: indego_rides
+  bq_table: indego_stations
   indego_url: https://www.rideindego.com/about/data/
-  neighborhood_file_url: https://raw.githubusercontent.com/opendataphilly/open-geo-data/master/philadelphia-neighborhoods/philadelphia-neighborhoods.geojson
 variables_dir: /home/src/mage_data/indego_pipeline
 widgets: []

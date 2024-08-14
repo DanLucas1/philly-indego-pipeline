@@ -3,7 +3,7 @@ import requests
 import zipfile
 import pandas as pd
 from indego_pipeline.utils.set_date import previous_quarter
-from indego_pipeline.utils.schemas import dtypes_read
+from indego_pipeline.utils.ride_schemas import dtypes_read
 
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader

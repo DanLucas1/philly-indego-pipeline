@@ -5,7 +5,7 @@ import pyarrow.parquet as pq
 import pyarrow.dataset as ds
 import os
 from indego_pipeline.utils.set_date import previous_quarter
-from indego_pipeline.utils.schemas import dtypes_labeled
+from indego_pipeline.utils.ride_schemas import dtypes_write
 
 if 'data_loader' not in globals():
     from mage_ai.data_preparation.decorators import data_loader
@@ -24,7 +24,7 @@ def load_from_gcs(*args, **kwargs):
     year, quarter = previous_quarter(kwargs['execution_date'])
 
     # bucket name matches bucket defined in variables.tf
-    bucket_name = kwargs['bucket_name']
+    bucket_name = os.environ.get('GCS_BUCKET')
     gcs_path = f'{bucket_name}/Y={year}/Q={quarter}/'
 
     # generate GCS object
@@ -49,7 +49,7 @@ def load_from_gcs(*args, **kwargs):
         partitioning=partitioning)
 
     # cast dataset to pandas df
-    df = pq_from_gcs.to_table().to_pandas().astype(dtypes_labeled)
+    df = pq_from_gcs.to_table().to_pandas().astype(dtypes_write)
 
     # drop the partition columns
     df = df.drop(columns=['Y', 'Q', 'M', 'D'])
