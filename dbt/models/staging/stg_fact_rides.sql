@@ -15,10 +15,8 @@ SELECT
     {{ dbt.safe_cast("plan_duration", api.Column.translate_type("integer")) }} AS plan_duration,
     trip_route_category,
     passholder_type,
-    COALESCE(bike_type, 'unknown') AS bike_type,
-    COALESCE(start_neighborhood, 'Unknown') AS start_neighborhood,      
-    COALESCE(end_neighborhood, 'Unknown') AS end_neighborhood
-FROM {{ source('indego_dwh', 'fact_indego_rides') }}
+    COALESCE(bike_type, 'unknown') AS bike_type
+FROM {{ source('indego_dwh', 'indego_rides') }}
 WHERE end_time >= start_time
 
 {% if var('is_test_run', default=true) %}
