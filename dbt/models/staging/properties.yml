@@ -5,10 +5,13 @@ sources:
     database: indego-pipeline
     schema: indego_tripdata
     tables:
-      - name: fact_indego_rides
+      - name: indego_rides
+      - name: indego_stations
+      - name: philadelphia_neighborhoods
+
 
 models:
-  - name: stg_rides
+  - name: stg_fact_rides
     description: "Staging table for rides data"
     columns:
       - name: trip_id
@@ -125,21 +128,65 @@ models:
         tests:
           - accepted_values:
               values: "{{ var('bike_types') }}"
-
-      - name: start_neighborhood
-        data_type: string
-        description: "Neighborhood matching the starting latitude and longitude of the trip"
-        tests:
-          - not_null
-
-      - name: end_neighborhood
-        data_type: string
-        description: "Neighborhood matching the ending latitude and longitude of the trip"
-        tests:
-          - not_null
-
     tests:
       - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
           column_A: end_time
           column_B: start_time
           or_equal: True
+
+  - name: stg_dim_stations
+    description: "Staging table for station list"
+    columns:
+      - name: station_id
+        data_type: int64
+        description: "Unique station identifier"
+        tests:
+          - unique:
+              severity: error
+          - not_null:
+              severity: error
+      - name: station_name
+        data_type: string
+        description: "Station description (can be shared between station IDs if all but 1 station ID are inactive)"
+        tests:
+          - unique:
+              severity: error
+              where: status = 'Active'
+          - not_null:
+              severity: error
+      - name: go_live_date
+        data_type: timestamp
+        description: "date of station go-live"
+        tests:
+          - not_null:
+              severity: warn
+      - name: status
+        data_type: string
+        description: "Indicator if station is active or inactive as of station list publishing date"
+        tests:
+          - not_null:
+              severity: error
+
+  - name: stg_dim_neighborhoods
+    description: "shape data and descriptions of Philadelphia neighborhoods from Philadelphia open data project"
+    columns:
+      - name: neighborhood_name
+        data_type: string
+        description: "description of Philadelphia neighborhood represented by the geometry column"
+        tests:
+          - not_null
+          - unique
+
+      - name: shape_leng
+        data_type: numeric
+        description: "length of the polygonal shape representing the area"
+
+      - name: shape_area
+        data_type: numeric
+        description: "calculated area of the neighborhood"
+
+      - name: geometry
+        data_type: geography
+        description: "geometrical coordinate list representing the neighborhood boundaries (stored as well known text)"
+        tests:
+          - not_null

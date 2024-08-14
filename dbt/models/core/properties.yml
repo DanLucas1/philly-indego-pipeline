@@ -3,12 +3,12 @@ models:
     description: "Production Indego rides table"
     columns:
 
-      # columns pre-tested in staging
+      # columns pre-tested in rides staging
       - name: trip_id
         data_type: int64
         description: "Unique ride identifier"
         
-      - name: duration
+      - name: duration_minutes
         data_type: int64
         description: "Ride duration in minutes"
 
@@ -20,7 +20,7 @@ models:
         data_type: timestamp
         description: "Trip end time in EST"
 
-      - name: start_station
+      - name: start_station_id
         data_type: int64
         description: "The station ID where the trip originated"
 
@@ -32,7 +32,7 @@ models:
         data_type: numeric
         description: "The longitude of the station where the trip originated"
 
-      - name: end_station
+      - name: end_station_id
         data_type: int64
         description: "The station ID where the trip finished"
 
@@ -52,7 +52,7 @@ models:
         data_type: int64
         description: "The number of days that the plan the passholder is using entitles them to ride; 0 is used for a single ride plan (Walk-up)"
 
-      - name: trip_route_category
+      - name: trip_type
         data_type: string
         description: "'Round Trip' for trips starting and ending at the same station or 'One Way' for all other trips"
 
@@ -64,16 +64,26 @@ models:
         data_type: string
         description: "The kind of bike used on the trip, including standard pedal-powered bikes or electric assist bikes"
 
+    # new columns merged from neighborhoods table
       - name: start_neighborhood
         data_type: string
         description: "Neighborhood matching the starting latitude and longitude of the trip"
+        tests:
+          - relationships:
+              to: ref('stg_dim_neighborhoods')
+              field: neighborhood_name
+              where: COALESCE(start_lat, start_lon) IS NOT NULL # N/A if end point has no location 
 
       - name: end_neighborhood
         data_type: string
         description: "Neighborhood matching the ending latitude and longitude of the trip"
+        tests:
+          - relationships:
+              to: ref('stg_dim_neighborhoods')
+              field: neighborhood_name
+              where: COALESCE(end_lat, end_lon) IS NOT NULL # N/A if end point has no location 
 
-    # new columns merged from station lookup seed
-
+    # columns merged from stations table
       - name: start_station_name
         data_type: string
         description: "Name of the station where the trip began"
