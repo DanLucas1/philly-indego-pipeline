@@ -36,7 +36,7 @@ def export_data_to_big_query(df: pd.DataFrame, **kwargs) -> None:
         {'name': 'neighborhood_name', 'type': 'STRING'},
         {'name': 'shape_leng', 'type': 'FLOAT'},
         {'name': 'shape_area', 'type': 'FLOAT'},
-        {'name': 'geometry', 'type': 'GEOGRAPHY'}
+        {'name': 'geometry', 'type': 'STRING'}
     ]
 
     # generate table object
