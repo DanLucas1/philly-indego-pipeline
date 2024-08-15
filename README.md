@@ -44,7 +44,7 @@ Showing the utility of the neighborhoods dataset by exposing a clear trend of in
 ![](assets/neighborhood_heatmap.png "Neighborhood Heatmap")
 
 #### Top/Bottom 10 Destination Neighborhoods by Distance Traveled
-For the destinations that people are willing to travel the farthest to, we do see longer rides facilitated by electric bikes. However this pattern reverses for some top destinations (East Falls, Manayunk, Wissahickon) likely because those locations are reached via the scenic and enjoyable Schuylkill river bike path.
+For the destinations that people are willing to travel the farthest to, we do see longer rides facilitated by electric bikes. However this pattern diminishes or reverses for some top destinations (East Falls, Manayunk, Wissahickon) likely because those locations are often reached via the scenic Schuylkill river path.
 ![](assets/distance_top10_bottom10.png "dbt lineage")
 
 ### Planned Future Updates
