@@ -36,11 +36,11 @@ In dbt cloud, I create a staging area for fact (rides) and dimension (stations a
 Google's Looker Studio has built in integration with BigQuery. Examples of the visuals produced from this data model are below.
 
 #### Monthly Ridership Trends
-Clear seasonal trends with predictably soft ridership in the first year of the COVID pandemic  
+Clear seasonal trends with predictably soft ridership and a pause in new station building in the first year of the COVID pandemic.
 ![](assets/monthly_rides_stations.png "Monthly Ridership and Station Trends")
 
 #### Origin/Destination Neighborhood Heatmap
-Showing the utility of the neighborhoods dataset
+Showing the utility of the neighborhoods dataset by exposing a clear trend of intra-neighborhood travel, especially in center city and neighborhoods around the Schuylkill/Universities.
 ![](assets/neighborhood_heatmap.png "Neighborhood Heatmap")
 
 #### Top/Bottom 10 Destination Neighborhoods by Distance Traveled
